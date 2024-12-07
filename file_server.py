@@ -138,7 +138,7 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
             currentPercent++;
             progressBar.value = currentPercent;
         }
-    }, 100);
+    }, 200);
 
     xhr.upload.onprogress = function(e) {
         if (e.lengthComputable) {
