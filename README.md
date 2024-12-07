@@ -16,3 +16,14 @@ HTTPServerLite 是一个简易文件服务器，支持文件的上传、下载�
 ```sh
 python --version
 ```
+
+## 使用
+
+你可以使用以下命令启动服务器：
+
+```sh
+python file_server.py --port <指定端口> --dir <指定目录>
+```
+
+- `--port`：指定服务器端口，默认是8000。
+- `--dir`：指定要共享的目录，默认是脚本所在目录。
