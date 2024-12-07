@@ -65,7 +65,7 @@ class FileServerHandler(SimpleHTTPRequestHandler):
         # 简单判断文件类型
         if ext in ['.png', '.jpg', '.jpeg', '.gif', '.webp']:
             content_tag = f'<img src="{urllib.parse.quote(filename)}" style="max-width:90%;height:auto;">'
-        elif ext in ['.mp4', '.webm', '.ogg']:
+        elif ext in ['.mp4', '.webm', '.ogg', '.avi', '.mov']:
             content_tag = f'<video src="{urllib.parse.quote(filename)}" controls style="max-width:90%;height:auto;"></video>'
         elif ext in ['.mp3', '.wav', '.ogg']:
             content_tag = f'<audio src="{urllib.parse.quote(filename)}" controls></audio>'
@@ -107,9 +107,9 @@ class FileServerHandler(SimpleHTTPRequestHandler):
         html.append("<h2>当前目录: %s</h2>\n" % os.path.basename(os.getcwd()))
         html.append("<hr>\n")
 
-        # 文件上传表单
+        # 支持多文件上传的表单
         html.append('<form ENCTYPE="multipart/form-data" method="post">')
-        html.append('<input name="file" type="file"/>\n')
+        html.append('<input name="file" type="file" multiple/>\n')
         html.append('<input type="submit" value="上传"/>')
         html.append('</form>\n')
         html.append("<hr>\n")
@@ -124,7 +124,6 @@ class FileServerHandler(SimpleHTTPRequestHandler):
                 html.append('<li><b><a href="%s/">%s/</a></b></li>\n' % (linkname, display_name))
             else:
                 # 添加预览链接 '?preview=filename'
-                # 点击文件名跳预览页面
                 html.append('<li><a href="?preview=%s">%s</a> ' % (linkname, display_name))
                 # 下载和删除链接
                 html.append('[<a href="%s" download>下载</a>]' % linkname)
@@ -160,6 +159,7 @@ class FileServerHandler(SimpleHTTPRequestHandler):
             self.send_error(400, f"解析上传文件失败: {e}")
             return
 
+        # 多文件上传: iter_parts() 会迭代每个上传的文件
         if msg.is_multipart():
             for part in msg.iter_parts():
                 filename = part.get_filename()
@@ -207,7 +207,7 @@ def run(server_class=HTTPServer, handler_class=FileServerHandler, port=8000, dir
         httpd.server_close()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="简易文件服务器，支持上传、下载、删除和预览功能。")
+    parser = argparse.ArgumentParser(description="简易文件服务器，支持多文件上传、下载、删除和预览功能。")
     parser.add_argument('--port', type=int, default=8000, help='指定服务器端口，默认是8000')
     parser.add_argument('--dir', type=str, default=None, help='指定要共享的目录，默认是脚本所在目录')
     args = parser.parse_args()
